@@ -638,6 +638,7 @@
   }
 
   function resizeCanvas(){
+    const oldW = W, oldH = H;
     const rect = holder.getBoundingClientRect();
     DPR = window.devicePixelRatio || 1;
     canvas.width = rect.width * DPR;
@@ -649,6 +650,17 @@
     H = rect.height;
     ballRadius = W * 0.016;
     setupPockets();
+
+    // Pencere boyutu değişince toplar da masayla birlikte ölçeklensin
+    if(oldW && oldH && balls.length){
+      const sx = W/oldW, sy = H/oldH;
+      balls.forEach(b=>{
+        b.x *= sx; b.y *= sy;
+        b.vx *= sx; b.vy *= sy;
+        b.r = ballRadius;
+      });
+      if(aimStart){ aimStart.x *= sx; aimStart.y *= sy; }
+    }
   }
 
   function setupPockets(){
@@ -1094,7 +1106,6 @@
 
   startBtn.addEventListener('click', startGame);
   window.addEventListener('resize', ()=>{
-    if(!gameRunning) return;
     resizeCanvas();
   });
 
